@@ -53,9 +53,6 @@ END_MESSAGE_MAP()
 
 CMFCStartDlg::CMFCStartDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCSTART_DIALOG, pParent)
-	, m_nPointRadius(5)
-	, m_nThickness(1)
-	, m_nDraggedIndex(-1)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -63,10 +60,10 @@ CMFCStartDlg::CMFCStartDlg(CWnd* pParent /*=nullptr*/)
 void CMFCStartDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDIT_POINT_RADIUS, m_nPointRadius);
-	DDV_MinMaxInt(pDX, m_nPointRadius, 1, 100);
-	DDX_Text(pDX, IDC_EDIT_BORDER_THICKNESS, m_nThickness);
-	DDV_MinMaxInt(pDX, m_nThickness, 1, 50);
+	DDX_Text(pDX, IDC_EDIT_POINT_RADIUS, m_model.m_nPointRadius);
+	DDV_MinMaxInt(pDX, m_model.m_nPointRadius, 1, 100);
+	DDX_Text(pDX, IDC_EDIT_BORDER_THICKNESS, m_model.m_nThickness);
+	DDV_MinMaxInt(pDX, m_model.m_nThickness, 1, 50);
 }
 
 BEGIN_MESSAGE_MAP(CMFCStartDlg, CDialogEx)
@@ -158,20 +155,20 @@ void CMFCStartDlg::OnPaint()
 
 		UpdateData(TRUE); // UI에서 반지름과 두께 값을 가져옴
 
-		// 저장된 점 그리기
-		for (const auto& pt : m_vPoints)
+		// 저장된 점 그리기 (SOLID 모델 사용)
+		for (const auto& pt : m_model.m_vPoints)
 		{
-			CPixelPainter::DrawFilledCircle(&dc, pt, m_nPointRadius, RGB(0, 0, 0)); // 입력받은 반지름 사용
+			CPixelPainter::DrawFilledCircle(&dc, pt, m_model.m_nPointRadius, RGB(0, 0, 0));
 		}
 
 		// 3개의 점이 있을 경우 외접원 그리기
-		if (m_vPoints.size() == 3)
+		if (m_model.IsReadyForCircle())
 		{
 			CPoint center;
 			double radius;
-			if (CGeometry::CalculateCircumcircle(m_vPoints, center, radius))
+			if (CGeometry::CalculateCircumcircle(m_model.m_vPoints, center, radius))
 			{
-				CPixelPainter::DrawHollowCircle(&dc, center, radius, m_nThickness, RGB(0, 0, 0)); // 입력받은 두께 사용
+				CPixelPainter::DrawHollowCircle(&dc, center, radius, m_model.m_nThickness, RGB(0, 0, 0));
 			}
 		}
 
@@ -190,24 +187,16 @@ void CMFCStartDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	UpdateData(TRUE); // 최신 반지름/두께 값 가져오기
 
-	// 기존 점들 중 클릭한 위치가 있는지 확인 (드래그 시작 체크)
-	m_nDraggedIndex = -1;
-	for (int i = 0; i < (int)m_vPoints.size(); i++)
+	// 모델에게 클릭 판정 요청 (HitTest)
+	m_model.m_nDraggedIndex = m_model.HitTest(point);
+	
+	if (m_model.m_nDraggedIndex != -1)
 	{
-		int dx = m_vPoints[i].x - point.x;
-		int dy = m_vPoints[i].y - point.y;
-		if (sqrt(dx * dx + dy * dy) <= m_nPointRadius + 2) // 약간의 여유 공간(+2)
-		{
-			m_nDraggedIndex = i;
-			SetCapture(); // 마우스 캡처 시작 (윈도우 밖으로 나가도 드래그 유지)
-			break;
-		}
+		SetCapture();
 	}
-
-	// 드래그가 아니고 점이 3개 미만이면 새로운 점 추가
-	if (m_nDraggedIndex == -1 && m_vPoints.size() < 3)
+	else if (m_model.m_vPoints.size() < 3)
 	{
-		m_vPoints.push_back(point);
+		m_model.AddPoint(point);
 		UpdateCoordinateDisplay();
 		Invalidate();
 	}
@@ -217,12 +206,11 @@ void CMFCStartDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CMFCStartDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
-	if (m_nDraggedIndex != -1 && (nFlags & MK_LBUTTON))
+	if (m_model.m_nDraggedIndex != -1 && (nFlags & MK_LBUTTON))
 	{
-		// 드래그 중인 점의 좌표 업데이트
-		m_vPoints[m_nDraggedIndex] = point;
+		m_model.MovePoint(m_model.m_nDraggedIndex, point);
 		UpdateCoordinateDisplay();
-		Invalidate(); // 실시간으로 다시 그리기
+		Invalidate();
 	}
 
 	CDialogEx::OnMouseMove(nFlags, point);
@@ -230,10 +218,10 @@ void CMFCStartDlg::OnMouseMove(UINT nFlags, CPoint point)
 
 void CMFCStartDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if (m_nDraggedIndex != -1)
+	if (m_model.m_nDraggedIndex != -1)
 	{
-		m_nDraggedIndex = -1;
-		ReleaseCapture(); // 마우스 캡처 해제
+		m_model.m_nDraggedIndex = -1;
+		ReleaseCapture();
 	}
 
 	CDialogEx::OnLButtonUp(nFlags, point);
@@ -246,9 +234,9 @@ void CMFCStartDlg::UpdateCoordinateDisplay()
 	for (int i = 0; i < 3; i++)
 	{
 		CString str;
-		if (i < static_cast<int>(m_vPoints.size()))
+		if (i < static_cast<int>(m_model.m_vPoints.size()))
 		{
-			str.Format(_T("Point %d: (%d, %d)"), i + 1, m_vPoints[i].x, m_vPoints[i].y);
+			str.Format(_T("Point %d: (%d, %d)"), i + 1, m_model.m_vPoints[i].x, m_model.m_vPoints[i].y);
 		}
 		else
 		{
@@ -260,7 +248,7 @@ void CMFCStartDlg::UpdateCoordinateDisplay()
 
 void CMFCStartDlg::OnBnClickedBtnReset()
 {
-	m_vPoints.clear();
+	m_model.Reset();
 	UpdateCoordinateDisplay();
 	Invalidate();
 }
