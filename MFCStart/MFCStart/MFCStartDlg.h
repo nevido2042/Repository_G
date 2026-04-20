@@ -12,6 +12,8 @@
 #include "CCircleController.h"
 #include <memory>
 
+#define WM_USER_REFRESH_UI (WM_USER + 1)
+
 // CMFCStartDlg 대화 상자
 class CMFCStartDlg : public CDialogEx
 {
@@ -46,5 +48,7 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedBtnReset();
+	afx_msg void OnBnClickedBtnRandomMove();
+	afx_msg LRESULT OnUserRefreshUI(WPARAM wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 };

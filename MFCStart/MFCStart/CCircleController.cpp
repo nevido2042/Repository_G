@@ -1,6 +1,10 @@
 ﻿#include "pch.h"
 #include "CCircleController.h"
 #include "MFCStartDlg.h"
+#include "Resource.h"
+#include <thread>
+#include <random>
+#include <chrono>
 
 CCircleController::CCircleController(CCircleModel& model, CMFCStartDlg& view)
 	: m_model(model), m_view(view)
@@ -55,4 +59,51 @@ void CCircleController::OnReset()
 	m_model.Reset();
 	m_view.UpdateCoordinateDisplay();
 	m_view.Invalidate();
+}
+
+void CCircleController::OnRandomMove()
+{
+	if (!m_model.IsReadyForCircle())
+	{
+		CString strMsg;
+		strMsg.LoadString(IDS_ERR_NEED_3_POINTS);
+		::AfxMessageBox(strMsg);
+		return;
+	}
+
+	// 스레드에 전달할 포인터 (수명 주의: 다이얼로그 종료 시 스레드 제어 로직 필요할 수 있음)
+	CCircleModel* pModel = &m_model;
+	CMFCStartDlg* pView = &m_view;
+
+	std::thread worker([pModel, pView]() {
+		CRect rect;
+		pView->GetClientRect(&rect);
+
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		
+		int radius = pModel->m_nPointRadius;
+		int minX = radius;
+		int maxX = max(radius, rect.Width() - radius);
+		int minY = radius;
+		int maxY = max(radius, rect.Height() - radius);
+
+		std::uniform_int_distribution<> disX(minX, maxX);
+		std::uniform_int_distribution<> disY(minY, maxY);
+
+		for (int i = 0; i < 10; ++i)
+		{
+			for (int j = 0; j < 3; ++j)
+			{
+				pModel->MovePoint(j, CPoint(disX(gen), disY(gen)));
+			}
+
+			// 메인 UI 스레드에 화면 갱신 요청
+			pView->PostMessage(WM_USER_REFRESH_UI);
+			
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		}
+	});
+
+	worker.detach(); // 독립 실행
 }

@@ -1,4 +1,4 @@
-
+﻿
 // MFCStartDlg.cpp: 구현 파일
 //
 
@@ -74,6 +74,8 @@ BEGIN_MESSAGE_MAP(CMFCStartDlg, CDialogEx)
 	ON_WM_MOUSEMOVE()
 	ON_WM_LBUTTONUP()
 	ON_BN_CLICKED(IDC_BTN_RESET, &CMFCStartDlg::OnBnClickedBtnReset)
+	ON_BN_CLICKED(IDC_BTN_RANDOM_MOVE, &CMFCStartDlg::OnBnClickedBtnRandomMove)
+	ON_MESSAGE(WM_USER_REFRESH_UI, &CMFCStartDlg::OnUserRefreshUI)
 END_MESSAGE_MAP()
 
 
@@ -224,5 +226,17 @@ void CMFCStartDlg::UpdateCoordinateDisplay()
 void CMFCStartDlg::OnBnClickedBtnReset()
 {
 	m_controller->OnReset();
+}
+
+void CMFCStartDlg::OnBnClickedBtnRandomMove()
+{
+	m_controller->OnRandomMove();
+}
+
+LRESULT CMFCStartDlg::OnUserRefreshUI(WPARAM wParam, LPARAM lParam)
+{
+	UpdateCoordinateDisplay();
+	Invalidate();
+	return 0;
 }
 

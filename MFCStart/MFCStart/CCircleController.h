@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "CCircleModel.h"
 
@@ -16,6 +16,7 @@ public:
 	void OnMouseMove(UINT nFlags, CPoint point);
 	void OnLButtonUp(UINT nFlags, CPoint point);
 	void OnReset();
+	void OnRandomMove();
 
 private:
 	CCircleModel& m_model;

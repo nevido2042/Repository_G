@@ -52,10 +52,10 @@ BEGIN
     "\r\n"
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
     "LANGUAGE 18, 1\r\n"
-    "#include ""res\\MFCStart.rc2""  // Microsoft Visual C++ ?댁쇅???ㅻⅨ ?꾧뎄?먯꽌 ?몄쭛??由ъ냼?ㅼ엯?덈떎.\r\n"
-    "#include ""l.KOR\\afxres.rc""      // ?쒖? 援ъ꽦 ?붿냼\r\n"
+    "#include ""res\\MFCStart.rc2""  // Microsoft Visual C++ 이외의 다른 도구에서 편집한 리소스입니다.\r\n"
+    "#include ""l.KOR\\afxres.rc""      // 표준 구성 요소\r\n"
     "#if !defined(_AFXDLL)\r\n"
-    "#include ""l.KOR\\afxribbon.rc""   // MFC 由щ낯 諛?而⑦듃濡?留됰? 由ъ냼??r\n"
+    "#include ""l.KOR\\afxribbon.rc""   // MFC 리본 및 컨트롤 막대 리소스\r\n"
     "#endif\r\n"
     "#endif\r\n"
     "\0"
@@ -69,8 +69,6 @@ END
 // Icon
 //
 
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\MFCStart.ico"
 
 
@@ -81,13 +79,13 @@ IDR_MAINFRAME           ICON                    "res\\MFCStart.ico"
 
 IDD_ABOUTBOX DIALOGEX 0, 0, 170, 62
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "MFCStart ?뺣낫"
+CAPTION "MFCStart 정보"
 FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,14,14,21,20
-    LTEXT           "MFCStart, 踰꾩쟾 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
+    LTEXT           "MFCStart, 버전 1.0",IDC_STATIC,42,14,114,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2026",IDC_STATIC,42,26,114,8
-    DEFPUSHBUTTON   "?뺤씤",IDOK,113,41,50,14,WS_GROUP
+    DEFPUSHBUTTON   "확인",IDOK,113,41,50,14,WS_GROUP
 END
 
 IDD_MFCSTART_DIALOG DIALOGEX 0, 0, 320, 200
@@ -104,6 +102,7 @@ BEGIN
     LTEXT           "Point 2: (- , -)",IDC_STATIC_COORD2,7,55,150,8
     LTEXT           "Point 3: (- , -)",IDC_STATIC_COORD3,7,65,150,8
     PUSHBUTTON      "Reset",IDC_BTN_RESET,227,7,50,14
+    PUSHBUTTON      "Random Move",IDC_BTN_RANDOM_MOVE,227,25,50,14
 END
 
 
@@ -129,13 +128,13 @@ BEGIN
     BEGIN
         BLOCK "041204B0"
         BEGIN
-            VALUE "CompanyName", "TODO: <?뚯궗 ?대쫫>"
+            VALUE "CompanyName", "TODO: <회사 이름>"
             VALUE "FileDescription", "MFCStart"
             VALUE "FileVersion", "1.0.0.1"
             VALUE "InternalName", "MFCStart.exe"
-            VALUE "LegalCopyright", "TODO: (c) <?뚯궗 ?대쫫>.  All rights reserved."
+            VALUE "LegalCopyright", "TODO: (c) <회사 이름>.  All rights reserved."
             VALUE "OriginalFilename", "MFCStart.exe"
-            VALUE "ProductName", "TODO: <?쒗뭹 ?대쫫>"
+            VALUE "ProductName", "TODO: <제품 이름>"
             VALUE "ProductVersion", "1.0.0.1"
         END
     END
@@ -191,7 +190,8 @@ END
 
 STRINGTABLE
 BEGIN
-    IDS_ABOUTBOX            "MFCStart ?뺣낫(&A)..."
+    IDS_ABOUTBOX            "MFCStart 정보(&A)..."
+    IDS_ERR_NEED_3_POINTS   "3개의 점이 모두 찍혀 있어야 랜덤 이동이 가능합니다."
 END
 
 #endif    // 한국어(대한민국) resources
@@ -211,13 +211,12 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 LANGUAGE 18, 1
-#include "res\MFCStart.rc2"  // Microsoft Visual C++ ?댁쇅???ㅻⅨ ?꾧뎄?먯꽌 ?몄쭛??由ъ냼?ㅼ엯?덈떎.
-#include "l.KOR\afxres.rc"      // ?쒖? 援ъ꽦 ?붿냼
+#include "res\\MFCStart.rc2"  // Microsoft Visual C++ 이외의 다른 도구에서 편집한 리소스입니다.
+#include "l.KOR\\afxres.rc"      // 표준 구성 요소
 #if !defined(_AFXDLL)
-#include "l.KOR\afxribbon.rc"   // MFC 由щ낯 諛?而⑦듃濡?留됰? 由ъ냼??r
+#include "l.KOR\\afxribbon.rc"   // MFC 리본 및 컨트롤 막대 리소스
 #endif
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-
