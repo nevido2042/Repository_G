@@ -55,6 +55,7 @@ CMFCStartDlg::CMFCStartDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCSTART_DIALOG, pParent)
 	, m_nPointRadius(5)
 	, m_nThickness(1)
+	, m_nDraggedIndex(-1)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -73,6 +74,8 @@ BEGIN_MESSAGE_MAP(CMFCStartDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_MOUSEMOVE()
+	ON_WM_LBUTTONUP()
 	ON_BN_CLICKED(IDC_BTN_RESET, &CMFCStartDlg::OnBnClickedBtnReset)
 END_MESSAGE_MAP()
 
@@ -185,8 +188,24 @@ HCURSOR CMFCStartDlg::OnQueryDragIcon()
 
 void CMFCStartDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	// 네 번째 클릭부터는 점을 추가하지 않음
-	if (m_vPoints.size() < 3)
+	UpdateData(TRUE); // 최신 반지름/두께 값 가져오기
+
+	// 기존 점들 중 클릭한 위치가 있는지 확인 (드래그 시작 체크)
+	m_nDraggedIndex = -1;
+	for (int i = 0; i < (int)m_vPoints.size(); i++)
+	{
+		int dx = m_vPoints[i].x - point.x;
+		int dy = m_vPoints[i].y - point.y;
+		if (sqrt(dx * dx + dy * dy) <= m_nPointRadius + 2) // 약간의 여유 공간(+2)
+		{
+			m_nDraggedIndex = i;
+			SetCapture(); // 마우스 캡처 시작 (윈도우 밖으로 나가도 드래그 유지)
+			break;
+		}
+	}
+
+	// 드래그가 아니고 점이 3개 미만이면 새로운 점 추가
+	if (m_nDraggedIndex == -1 && m_vPoints.size() < 3)
 	{
 		m_vPoints.push_back(point);
 		UpdateCoordinateDisplay();
@@ -194,6 +213,30 @@ void CMFCStartDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	}
 
 	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+void CMFCStartDlg::OnMouseMove(UINT nFlags, CPoint point)
+{
+	if (m_nDraggedIndex != -1 && (nFlags & MK_LBUTTON))
+	{
+		// 드래그 중인 점의 좌표 업데이트
+		m_vPoints[m_nDraggedIndex] = point;
+		UpdateCoordinateDisplay();
+		Invalidate(); // 실시간으로 다시 그리기
+	}
+
+	CDialogEx::OnMouseMove(nFlags, point);
+}
+
+void CMFCStartDlg::OnLButtonUp(UINT nFlags, CPoint point)
+{
+	if (m_nDraggedIndex != -1)
+	{
+		m_nDraggedIndex = -1;
+		ReleaseCapture(); // 마우스 캡처 해제
+	}
+
+	CDialogEx::OnLButtonUp(nFlags, point);
 }
 
 void CMFCStartDlg::UpdateCoordinateDisplay()

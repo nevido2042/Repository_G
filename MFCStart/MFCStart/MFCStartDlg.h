@@ -1,4 +1,4 @@
-﻿
+
 // MFCStartDlg.h: 헤더 파일
 //
 
@@ -35,12 +35,17 @@ protected:
 
 	void UpdateCoordinateDisplay();
 
+	// 드래그 관련 상태
+	int m_nDraggedIndex;
+
 	// 생성된 메시지 맵 함수
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
+	afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnBnClickedBtnReset();
 	DECLARE_MESSAGE_MAP()
 };
