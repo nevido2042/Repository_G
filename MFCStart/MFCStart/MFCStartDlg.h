@@ -9,6 +9,8 @@
 #include "CPixelPainter.h"
 
 #include "CCircleModel.h"
+#include "CCircleController.h"
+#include <memory>
 
 // CMFCStartDlg 대화 상자
 class CMFCStartDlg : public CDialogEx
@@ -16,6 +18,9 @@ class CMFCStartDlg : public CDialogEx
 // 생성입니다.
 public:
 	CMFCStartDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
+
+	void UpdateCoordinateDisplay();
+	BOOL SyncData(BOOL bSaveAndValidate = TRUE) { return UpdateData(bSaveAndValidate); }
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -30,8 +35,7 @@ public:
 protected:
 	HICON m_hIcon;
 	CCircleModel m_model; // 데이터 모델
-
-	void UpdateCoordinateDisplay();
+	std::unique_ptr<CCircleController> m_controller;
 
 	// 생성된 메시지 맵 함수
 	virtual BOOL OnInitDialog();

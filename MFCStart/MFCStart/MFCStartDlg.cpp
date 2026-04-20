@@ -1,4 +1,4 @@
-﻿
+
 // MFCStartDlg.cpp: 구현 파일
 //
 
@@ -109,6 +109,7 @@ BOOL CMFCStartDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	m_controller = std::make_unique<CCircleController>(m_model, *this);
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -185,45 +186,19 @@ HCURSOR CMFCStartDlg::OnQueryDragIcon()
 
 void CMFCStartDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	UpdateData(TRUE); // 최신 반지름/두께 값 가져오기
-
-	// 모델에게 클릭 판정 요청 (HitTest)
-	m_model.m_nDraggedIndex = m_model.HitTest(point);
-	
-	if (m_model.m_nDraggedIndex != -1)
-	{
-		SetCapture();
-	}
-	else if (m_model.m_vPoints.size() < 3)
-	{
-		m_model.AddPoint(point);
-		UpdateCoordinateDisplay();
-		Invalidate();
-	}
-
+	m_controller->OnLButtonDown(nFlags, point);
 	CDialogEx::OnLButtonDown(nFlags, point);
 }
 
 void CMFCStartDlg::OnMouseMove(UINT nFlags, CPoint point)
 {
-	if (m_model.m_nDraggedIndex != -1 && (nFlags & MK_LBUTTON))
-	{
-		m_model.MovePoint(m_model.m_nDraggedIndex, point);
-		UpdateCoordinateDisplay();
-		Invalidate();
-	}
-
+	m_controller->OnMouseMove(nFlags, point);
 	CDialogEx::OnMouseMove(nFlags, point);
 }
 
 void CMFCStartDlg::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	if (m_model.m_nDraggedIndex != -1)
-	{
-		m_model.m_nDraggedIndex = -1;
-		ReleaseCapture();
-	}
-
+	m_controller->OnLButtonUp(nFlags, point);
 	CDialogEx::OnLButtonUp(nFlags, point);
 }
 
@@ -248,8 +223,6 @@ void CMFCStartDlg::UpdateCoordinateDisplay()
 
 void CMFCStartDlg::OnBnClickedBtnReset()
 {
-	m_model.Reset();
-	UpdateCoordinateDisplay();
-	Invalidate();
+	m_controller->OnReset();
 }
 
