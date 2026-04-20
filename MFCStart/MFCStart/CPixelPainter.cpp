@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "CPixelPainter.h"
 
 void CPixelPainter::DrawHollowCircle(CDC* pDC, CPoint center, double radius, int thickness, COLORREF color)

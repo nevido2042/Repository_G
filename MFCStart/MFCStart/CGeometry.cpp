@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "CGeometry.h"
 
 bool CGeometry::CalculateCircumcircle(const std::vector<CPoint>& points, CPoint& center, double& radius)
