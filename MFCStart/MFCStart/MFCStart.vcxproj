@@ -183,6 +183,8 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CGeometry.h" />
+    <ClInclude Include="CPixelPainter.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MFCStart.h" />
     <ClInclude Include="MFCStartDlg.h" />
@@ -191,6 +193,8 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CGeometry.cpp" />
+    <ClCompile Include="CPixelPainter.cpp" />
     <ClCompile Include="MFCStart.cpp" />
     <ClCompile Include="MFCStartDlg.cpp" />
     <ClCompile Include="pch.cpp">

@@ -1,4 +1,4 @@
-﻿
+
 // MFCStartDlg.cpp: 구현 파일
 //
 
@@ -7,6 +7,7 @@
 #include "MFCStart.h"
 #include "MFCStartDlg.h"
 #include "afxdialogex.h"
+#include <cmath>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -65,6 +66,7 @@ BEGIN_MESSAGE_MAP(CMFCStartDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_WM_LBUTTONDOWN()
 END_MESSAGE_MAP()
 
 
@@ -142,6 +144,25 @@ void CMFCStartDlg::OnPaint()
 	}
 	else
 	{
+		CPaintDC dc(this);
+
+		// 저장된 점 그리기
+		for (const auto& pt : m_vPoints)
+		{
+			CPixelPainter::DrawFilledCircle(&dc, pt, 5, RGB(0, 0, 0)); // 검은색 점
+		}
+
+		// 3개의 점이 있을 경우 외접원 그리기
+		if (m_vPoints.size() == 3)
+		{
+			CPoint center;
+			double radius;
+			if (CGeometry::CalculateCircumcircle(m_vPoints, center, radius))
+			{
+				CPixelPainter::DrawHollowCircle(&dc, center, radius, RGB(0, 0, 0)); // 검은색 원
+			}
+		}
+
 		CDialogEx::OnPaint();
 	}
 }
@@ -151,5 +172,18 @@ void CMFCStartDlg::OnPaint()
 HCURSOR CMFCStartDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
+}
+
+void CMFCStartDlg::OnLButtonDown(UINT nFlags, CPoint point)
+{
+	if (m_vPoints.size() >= 3)
+	{
+		m_vPoints.clear();
+	}
+	m_vPoints.push_back(point);
+
+	Invalidate();
+
+	CDialogEx::OnLButtonDown(nFlags, point);
 }
 
