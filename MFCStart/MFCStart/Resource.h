@@ -1,4 +1,4 @@
-﻿//{{NO_DEPENDENCIES}}
+//{{NO_DEPENDENCIES}}
 // Microsoft Visual C++에서 생성한 포함 파일입니다.
 // MFCStart.rc에서 사용
 //
@@ -7,6 +7,12 @@
 #define IDD_ABOUTBOX					100
 #define IDS_ABOUTBOX					101
 #define IDD_MFCSTART_DIALOG				102
+#define IDC_EDIT_POINT_RADIUS			1000
+#define IDC_EDIT_BORDER_THICKNESS		1001
+#define IDC_STATIC_COORD1				1002
+#define IDC_STATIC_COORD2				1003
+#define IDC_STATIC_COORD3				1004
+#define IDC_STATIC_COORD_LABEL			1005
 
 // 다음은 새 개체에 사용할 기본값입니다.
 //

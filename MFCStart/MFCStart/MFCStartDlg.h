@@ -29,6 +29,12 @@ protected:
 	HICON m_hIcon;
 	std::vector<CPoint> m_vPoints;
 
+	// UI 관련 변수
+	int m_nPointRadius;
+	int m_nThickness;
+
+	void UpdateCoordinateDisplay();
+
 	// 생성된 메시지 맵 함수
 	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);

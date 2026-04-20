@@ -53,6 +53,8 @@ END_MESSAGE_MAP()
 
 CMFCStartDlg::CMFCStartDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MFCSTART_DIALOG, pParent)
+	, m_nPointRadius(5)
+	, m_nThickness(1)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -60,6 +62,10 @@ CMFCStartDlg::CMFCStartDlg(CWnd* pParent /*=nullptr*/)
 void CMFCStartDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
+	DDX_Text(pDX, IDC_EDIT_POINT_RADIUS, m_nPointRadius);
+	DDV_MinMaxInt(pDX, m_nPointRadius, 1, 100);
+	DDX_Text(pDX, IDC_EDIT_BORDER_THICKNESS, m_nThickness);
+	DDV_MinMaxInt(pDX, m_nThickness, 1, 50);
 }
 
 BEGIN_MESSAGE_MAP(CMFCStartDlg, CDialogEx)
@@ -146,10 +152,12 @@ void CMFCStartDlg::OnPaint()
 	{
 		CPaintDC dc(this);
 
+		UpdateData(TRUE); // UI에서 반지름과 두께 값을 가져옴
+
 		// 저장된 점 그리기
 		for (const auto& pt : m_vPoints)
 		{
-			CPixelPainter::DrawFilledCircle(&dc, pt, 5, RGB(0, 0, 0)); // 검은색 점
+			CPixelPainter::DrawFilledCircle(&dc, pt, m_nPointRadius, RGB(0, 0, 0)); // 입력받은 반지름 사용
 		}
 
 		// 3개의 점이 있을 경우 외접원 그리기
@@ -159,7 +167,7 @@ void CMFCStartDlg::OnPaint()
 			double radius;
 			if (CGeometry::CalculateCircumcircle(m_vPoints, center, radius))
 			{
-				CPixelPainter::DrawHollowCircle(&dc, center, radius, RGB(0, 0, 0)); // 검은색 원
+				CPixelPainter::DrawHollowCircle(&dc, center, radius, m_nThickness, RGB(0, 0, 0)); // 입력받은 두께 사용
 			}
 		}
 
@@ -176,14 +184,33 @@ HCURSOR CMFCStartDlg::OnQueryDragIcon()
 
 void CMFCStartDlg::OnLButtonDown(UINT nFlags, CPoint point)
 {
-	if (m_vPoints.size() >= 3)
+	// 네 번째 클릭부터는 점을 추가하지 않음
+	if (m_vPoints.size() < 3)
 	{
-		m_vPoints.clear();
+		m_vPoints.push_back(point);
+		UpdateCoordinateDisplay();
+		Invalidate();
 	}
-	m_vPoints.push_back(point);
-
-	Invalidate();
 
 	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+void CMFCStartDlg::UpdateCoordinateDisplay()
+{
+	UINT nIDs[] = { IDC_STATIC_COORD1, IDC_STATIC_COORD2, IDC_STATIC_COORD3 };
+	
+	for (int i = 0; i < 3; i++)
+	{
+		CString str;
+		if (i < static_cast<int>(m_vPoints.size()))
+		{
+			str.Format(_T("Point %d: (%d, %d)"), i + 1, m_vPoints[i].x, m_vPoints[i].y);
+		}
+		else
+		{
+			str.Format(_T("Point %d: (- , -)"), i + 1);
+		}
+		SetDlgItemText(nIDs[i], str);
+	}
 }
 
