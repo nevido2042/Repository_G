@@ -1,4 +1,4 @@
-﻿
+
 // MFCStartDlg.cpp: 구현 파일
 //
 
@@ -73,6 +73,7 @@ BEGIN_MESSAGE_MAP(CMFCStartDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_LBUTTONDOWN()
+	ON_BN_CLICKED(IDC_BTN_RESET, &CMFCStartDlg::OnBnClickedBtnReset)
 END_MESSAGE_MAP()
 
 
@@ -212,5 +213,12 @@ void CMFCStartDlg::UpdateCoordinateDisplay()
 		}
 		SetDlgItemText(nIDs[i], str);
 	}
+}
+
+void CMFCStartDlg::OnBnClickedBtnReset()
+{
+	m_vPoints.clear();
+	UpdateCoordinateDisplay();
+	Invalidate();
 }
 

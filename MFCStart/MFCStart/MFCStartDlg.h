@@ -1,4 +1,4 @@
-﻿
+
 // MFCStartDlg.h: 헤더 파일
 //
 
@@ -41,5 +41,6 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnBnClickedBtnReset();
 	DECLARE_MESSAGE_MAP()
 };
