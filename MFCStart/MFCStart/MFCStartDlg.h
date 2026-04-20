@@ -1,4 +1,4 @@
-﻿
+
 // MFCStartDlg.h: 헤더 파일
 //
 
@@ -50,5 +50,6 @@ protected:
 	afx_msg void OnBnClickedBtnReset();
 	afx_msg void OnBnClickedBtnRandomMove();
 	afx_msg LRESULT OnUserRefreshUI(WPARAM wParam, LPARAM lParam);
+	afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 	DECLARE_MESSAGE_MAP()
 };

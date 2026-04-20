@@ -1,4 +1,4 @@
-﻿
+
 // MFCStartDlg.cpp: 구현 파일
 //
 
@@ -76,6 +76,7 @@ BEGIN_MESSAGE_MAP(CMFCStartDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_RESET, &CMFCStartDlg::OnBnClickedBtnReset)
 	ON_BN_CLICKED(IDC_BTN_RANDOM_MOVE, &CMFCStartDlg::OnBnClickedBtnRandomMove)
 	ON_MESSAGE(WM_USER_REFRESH_UI, &CMFCStartDlg::OnUserRefreshUI)
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -155,13 +156,28 @@ void CMFCStartDlg::OnPaint()
 	else
 	{
 		CPaintDC dc(this);
+		CRect rect;
+		GetClientRect(&rect);
 
+		// 1. 메모리 DC 및 비트맵 생성 (임시 도화지)
+		CDC memDC;
+		memDC.CreateCompatibleDC(&dc);
+		
+		CBitmap bitmap;
+		bitmap.CreateCompatibleBitmap(&dc, rect.Width(), rect.Height());
+		
+		CBitmap* pOldBitmap = memDC.SelectObject(&bitmap);
+
+		// 2. 배경 지우기 (메모리 DC에)
+		memDC.FillSolidRect(&rect, RGB(255, 255, 255));
+
+		// 3. 메모리 DC에 그리기
 		UpdateData(TRUE); // UI에서 반지름과 두께 값을 가져옴
 
-		// 저장된 점 그리기 (SOLID 모델 사용)
+		// 저장된 점 그리기
 		for (const auto& pt : m_model.m_vPoints)
 		{
-			CPixelPainter::DrawFilledCircle(&dc, pt, m_model.m_nPointRadius, RGB(0, 0, 0));
+			CPixelPainter::DrawFilledCircle(&memDC, pt, m_model.m_nPointRadius, RGB(0, 0, 0));
 		}
 
 		// 3개의 점이 있을 경우 외접원 그리기
@@ -171,11 +187,15 @@ void CMFCStartDlg::OnPaint()
 			double radius;
 			if (CGeometry::CalculateCircumcircle(m_model.m_vPoints, center, radius))
 			{
-				CPixelPainter::DrawHollowCircle(&dc, center, radius, m_model.m_nThickness, RGB(0, 0, 0));
+				CPixelPainter::DrawHollowCircle(&memDC, center, radius, m_model.m_nThickness, RGB(0, 0, 0));
 			}
 		}
 
-		CDialogEx::OnPaint();
+		// 4. 메모리 DC의 내용을 실제 화면 DC로 한 번에 복사
+		dc.BitBlt(0, 0, rect.Width(), rect.Height(), &memDC, 0, 0, SRCCOPY);
+
+		// 5. 정리
+		memDC.SelectObject(pOldBitmap);
 	}
 }
 
@@ -238,5 +258,11 @@ LRESULT CMFCStartDlg::OnUserRefreshUI(WPARAM wParam, LPARAM lParam)
 	UpdateCoordinateDisplay();
 	Invalidate();
 	return 0;
+}
+
+BOOL CMFCStartDlg::OnEraseBkgnd(CDC* pDC)
+{
+	// 더블 버퍼링을 위해 배경 지우기 기능을 비활성화합니다.
+	return TRUE;
 }
 
