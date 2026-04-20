@@ -1,4 +1,4 @@
-
+﻿
 // MFCStartDlg.h: 헤더 파일
 //
 
@@ -31,6 +31,7 @@ public:
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 지원입니다.
+	virtual BOOL PreTranslateMessage(MSG* pMsg) override; // 키 입력 가로채기
 
 
 // 구현입니다.

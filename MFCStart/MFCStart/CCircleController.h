@@ -1,6 +1,7 @@
-﻿#pragma once
+#pragma once
 
 #include "CCircleModel.h"
+#include <atomic>
 
 // Forward declaration
 class CMFCStartDlg;
@@ -21,4 +22,7 @@ public:
 private:
 	CCircleModel& m_model;
 	CMFCStartDlg& m_view;
+
+	std::atomic<bool> m_bIsRunning{ false };
+	std::atomic<bool> m_bStopRequest{ false };
 };

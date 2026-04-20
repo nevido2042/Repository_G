@@ -257,6 +257,19 @@ LRESULT CMFCStartDlg::OnUserRefreshUI(WPARAM wParam, LPARAM lParam)
 {
 	UpdateCoordinateDisplay();
 	Invalidate();
+
+	// wParam이 0보다 크면 남은 횟수 표시, 0이면 원래대로 복구
+	if (wParam > 0)
+	{
+		CString strStatus;
+		strStatus.Format(_T("Point Coordinates (Remaining: %d)"), (int)wParam);
+		SetDlgItemText(IDC_STATIC_COORD_LABEL, strStatus);
+	}
+	else
+	{
+		SetDlgItemText(IDC_STATIC_COORD_LABEL, _T("Point Coordinates:"));
+	}
+
 	return 0;
 }
 
@@ -264,5 +277,19 @@ BOOL CMFCStartDlg::OnEraseBkgnd(CDC* pDC)
 {
 	// 더블 버퍼링을 위해 배경 지우기 기능을 비활성화합니다.
 	return TRUE;
+}
+
+BOOL CMFCStartDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// WM_KEYDOWN 메시지 중 엔터와 ESC 키를 필터링합니다.
+	if (pMsg->message == WM_KEYDOWN)
+	{
+		if (pMsg->wParam == VK_RETURN || pMsg->wParam == VK_ESCAPE)
+		{
+			return TRUE; // 메시지를 처리하지 않고 무시함
+		}
+	}
+
+	return CDialogEx::PreTranslateMessage(pMsg);
 }
 

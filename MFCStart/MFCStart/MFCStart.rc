@@ -97,10 +97,10 @@ BEGIN
     EDITTEXT        IDC_EDIT_POINT_RADIUS,60,7,40,14,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "Thickness:",IDC_STATIC,110,10,40,8
     EDITTEXT        IDC_EDIT_BORDER_THICKNESS,155,7,40,14,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Point Coordinates:",IDC_STATIC_COORD_LABEL,7,30,100,8
-    LTEXT           "Point 1: (- , -)",IDC_STATIC_COORD1,7,45,100,8
-    LTEXT           "Point 2: (- , -)",IDC_STATIC_COORD2,7,55,100,8
-    LTEXT           "Point 3: (- , -)",IDC_STATIC_COORD3,7,65,100,8
+    LTEXT           "Point Coordinates:",IDC_STATIC_COORD_LABEL,7,30,150,8
+    LTEXT           "Point 1: (- , -)",IDC_STATIC_COORD1,7,45,80,8
+    LTEXT           "Point 2: (- , -)",IDC_STATIC_COORD2,7,55,80,8
+    LTEXT           "Point 3: (- , -)",IDC_STATIC_COORD3,7,65,80,8
     PUSHBUTTON      "Reset",IDC_BTN_RESET,227,7,50,14
     PUSHBUTTON      "Random Move",IDC_BTN_RANDOM_MOVE,227,25,50,14
 END

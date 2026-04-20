@@ -56,6 +56,7 @@ void CCircleController::OnLButtonUp(UINT nFlags, CPoint point)
 
 void CCircleController::OnReset()
 {
+	m_bStopRequest = true; // 실행 중인 스레드가 있다면 중단 요청
 	m_model.Reset();
 	m_view.UpdateCoordinateDisplay();
 	m_view.Invalidate();
@@ -63,6 +64,12 @@ void CCircleController::OnReset()
 
 void CCircleController::OnRandomMove()
 {
+	if (m_bIsRunning)
+	{
+		// 이미 실행 중이면 무시
+		return;
+	}
+
 	if (!m_model.IsReadyForCircle())
 	{
 		CString strMsg;
@@ -71,11 +78,15 @@ void CCircleController::OnRandomMove()
 		return;
 	}
 
-	// 스레드에 전달할 포인터 (수명 주의: 다이얼로그 종료 시 스레드 제어 로직 필요할 수 있음)
+	m_bIsRunning = true;
+	m_bStopRequest = false;
+
 	CCircleModel* pModel = &m_model;
 	CMFCStartDlg* pView = &m_view;
-
-	std::thread worker([pModel, pView]() {
+	
+	// atomic 변수들에 접근하기 위해 this를 캡처하거나 별도 변수 사용
+	// 안전을 위해 클래스 멤버에 대한 참조를 람다에 전달
+	std::thread worker([this, pModel, pView]() {
 		CRect rect;
 		pView->GetClientRect(&rect);
 
@@ -91,19 +102,27 @@ void CCircleController::OnRandomMove()
 		std::uniform_int_distribution<> disX(minX, maxX);
 		std::uniform_int_distribution<> disY(minY, maxY);
 
-		for (int i = 0; i < 10; ++i)
+		const int totalCount = 10;
+		for (int i = 0; i < totalCount; ++i)
 		{
+			if (m_bStopRequest) break; // 중단 요청 확인
+
 			for (int j = 0; j < 3; ++j)
 			{
 				pModel->MovePoint(j, CPoint(disX(gen), disY(gen)));
 			}
 
-			// 메인 UI 스레드에 화면 갱신 요청
-			pView->PostMessage(WM_USER_REFRESH_UI);
+			// 메인 UI 스레드에 화면 갱신 및 남은 횟수 전달
+			// wParam에 남은 횟수(1~10)를 실어서 보냄
+			pView->PostMessage(WM_USER_REFRESH_UI, (WPARAM)(totalCount - i), 0);
 			
 			std::this_thread::sleep_for(std::chrono::milliseconds(500));
 		}
+
+		// 종료 시 카운트 0 전달 및 상태 해제
+		pView->PostMessage(WM_USER_REFRESH_UI, 0, 0);
+		m_bIsRunning = false;
 	});
 
-	worker.detach(); // 독립 실행
+	worker.detach();
 }
