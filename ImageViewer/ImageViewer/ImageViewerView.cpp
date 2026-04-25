@@ -1,4 +1,4 @@
-﻿
+
 // ImageViewerView.cpp: CImageViewerView 클래스의 구현
 //
 
@@ -53,7 +53,7 @@ BOOL CImageViewerView::PreCreateWindow(CREATESTRUCT& cs)
 
 // CImageViewerView 그리기
 
-void CImageViewerView::OnDraw(CDC* /*pDC*/)
+void CImageViewerView::OnDraw(CDC* pDC)
 {
 	CImageViewerDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -61,6 +61,10 @@ void CImageViewerView::OnDraw(CDC* /*pDC*/)
 		return;
 
 	// TODO: 여기에 원시 데이터에 대한 그리기 코드를 추가합니다.
+	if (!pDoc->m_image.IsNull())
+	{
+		pDoc->m_image.Draw(pDC->m_hDC, 0, 0);
+	}
 }
 
 

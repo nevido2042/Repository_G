@@ -1,4 +1,4 @@
-﻿
+
 // ImageViewerDoc.h: CImageViewerDoc 클래스의 인터페이스
 //
 
@@ -21,6 +21,7 @@ public:
 // 재정의입니다.
 public:
 	virtual BOOL OnNewDocument();
+	virtual BOOL OnOpenDocument(LPCTSTR lpszPathName);
 	virtual void Serialize(CArchive& ar);
 #ifdef SHARED_HANDLERS
 	virtual void InitializeSearchContent();
@@ -34,8 +35,8 @@ public:
 	virtual void AssertValid() const;
 	virtual void Dump(CDumpContext& dc) const;
 #endif
-
-protected:
+public:
+	CImage m_image;
 
 // 생성된 메시지 맵 함수
 protected:
