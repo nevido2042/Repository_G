@@ -13,6 +13,8 @@
 #include "AdrBookDoc.h"
 #include "AdrBookView.h"
 
+#include "CDlgAddAdr.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -28,6 +30,8 @@ BEGIN_MESSAGE_MAP(CAdrBookView, CView)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
 	ON_WM_CREATE()
+	ON_WM_SIZE()
+	ON_COMMAND(ID_Add_Adr, &CAdrBookView::OnAddAdr)
 END_MESSAGE_MAP()
 
 // CAdrBookView 생성/소멸
@@ -112,7 +116,29 @@ int CAdrBookView::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 	// 리스트 박스 윈도우 생성
 	m_wndList.Create(WS_CHILD | WS_VISIBLE | LBS_STANDARD | WS_HSCROLL,
-		CRect(10, 10, 200, 200), this, 1234);
+		CRect(0, 0, 300, 300), this, 1234);
 
 	return 0;
+}
+
+void CAdrBookView::OnSize(UINT nType, int cx, int cy)
+{
+	CView::OnSize(nType, cx, cy);
+
+	m_wndList.MoveWindow(0, 0, 300, cy);
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+}
+
+void CAdrBookView::OnAddAdr()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+
+	CDlgAddAdr dlg;
+	if (dlg.DoModal() == IDOK)
+	{
+		m_wndList.AddString(dlg.m_strName + _T("[") + dlg.m_strPhone + _T("]"));
+		GetDocument()->AddAdr(dlg.m_strName, dlg.m_strPhone);
+	}
+
 }

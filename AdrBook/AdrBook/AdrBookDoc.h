@@ -36,6 +36,7 @@ public:
 #endif
 
 protected:
+	CPtrList m_ptrList;
 
 // 생성된 메시지 맵 함수
 protected:
@@ -45,4 +46,6 @@ protected:
 	// 검색 처리기에 대한 검색 콘텐츠를 설정하는 도우미 함수
 	void SetSearchContent(const CString& value);
 #endif // SHARED_HANDLERS
+public:
+	int AddAdr(CString name, CString phone);
 };

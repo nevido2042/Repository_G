@@ -186,6 +186,8 @@
     <ClInclude Include="AdrBook.h" />
     <ClInclude Include="AdrBookDoc.h" />
     <ClInclude Include="AdrBookView.h" />
+    <ClInclude Include="CDlgAddAdr.h" />
+    <ClInclude Include="CUserData.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="pch.h" />
@@ -196,6 +198,8 @@
     <ClCompile Include="AdrBook.cpp" />
     <ClCompile Include="AdrBookDoc.cpp" />
     <ClCompile Include="AdrBookView.cpp" />
+    <ClCompile Include="CDlgAddAdr.cpp" />
+    <ClCompile Include="CUserData.cpp" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

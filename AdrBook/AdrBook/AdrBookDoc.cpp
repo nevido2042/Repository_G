@@ -136,3 +136,13 @@ void CAdrBookDoc::Dump(CDumpContext& dc) const
 
 
 // CAdrBookDoc 명령
+
+int CAdrBookDoc::AddAdr(CString name, CString phone)
+{
+	// TODO: 여기에 구현 코드 추가.
+
+	CUserData* pNew = new CUserData(name, phone);
+	m_ptrList.AddTail(pNew);
+
+	return 0;
+}
